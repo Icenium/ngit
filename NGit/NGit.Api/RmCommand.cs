@@ -71,6 +71,7 @@ namespace NGit.Api
 	public class RmCommand : GitCommand<DirCache>
 	{
 		private ICollection<string> filepatterns;
+		private bool cached;
 
 		/// <param name="repo"></param>
 		protected internal RmCommand(Repository repo) : base(repo)
@@ -120,13 +121,16 @@ namespace NGit.Api
 				tw.AddTree(new DirCacheBuildIterator(builder));
 				while (tw.Next())
 				{
-					FilePath path = new FilePath(repo.WorkTree, tw.PathString);
-					FileMode mode = tw.GetFileMode(0);
-					if (mode.GetObjectType() == Constants.OBJ_BLOB)
+					if (!cached)
 					{
-						// Deleting a blob is simply a matter of removing
-						// the file or symlink named by the tree entry.
-						Delete(path);
+						FilePath path = new FilePath(repo.WorkTree, tw.PathString);
+						FileMode mode = tw.GetFileMode(0);
+						if (mode.GetObjectType() == Constants.OBJ_BLOB)
+						{
+							// Deleting a blob is simply a matter of removing
+							// the file or symlink named by the tree entry.
+							Delete(path);
+						}
 					}
 				}
 				builder.Commit();
@@ -153,6 +157,13 @@ namespace NGit.Api
 			{
 				p = p.GetParentFile();
 			}
+		}
+
+		public RmCommand SetCached(bool cached)
+		{
+			CheckCallable();
+			this.cached = cached;
+			return this;
 		}
 	}
 }
