@@ -44,8 +44,20 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("2.1.0.0")]
 
-[assembly:InternalsVisibleTo ("NGit.Test")]
-[assembly:InternalsVisibleTo ("Tester")]
+[assembly: InternalsVisibleTo("NGit.Test, PublicKey=" +
+"002400000480000094000000060200000024000052534131000400000100010073c29e645b8044" +
+"fe2abe4b12c6f9a04bdee93b7dc7454b55b1da6f0e47bf02948d11e9b0930171ad6e8b7ca82d70" +
+"97485e6067d0f320c91d0efdd50eaf0b9e590074d64c7b47a7e73ce1980123f32ff6db1e8fc32a" +
+"7f1c61116ba0f75751df5d170cc2bc9dc2a9fe97ddbbb0cb3fa9a601410778ee4602dc3ce56ab5" +
+"26af4aae"
+)]
+[assembly: InternalsVisibleTo("Tester, PublicKey=" +
+"002400000480000094000000060200000024000052534131000400000100010073c29e645b8044" +
+"fe2abe4b12c6f9a04bdee93b7dc7454b55b1da6f0e47bf02948d11e9b0930171ad6e8b7ca82d70" +
+"97485e6067d0f320c91d0efdd50eaf0b9e590074d64c7b47a7e73ce1980123f32ff6db1e8fc32a" +
+"7f1c61116ba0f75751df5d170cc2bc9dc2a9fe97ddbbb0cb3fa9a601410778ee4602dc3ce56ab5" +
+"26af4aae"
+)]
 // The following attributes are used to specify the signing key for the assembly, 
 // if desired. See the Mono documentation for more information about signing.
 
