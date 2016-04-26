@@ -43,8 +43,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using NGit.Transport;
 using NGit.Util;
 using Sharpen;
 
@@ -62,6 +62,7 @@ namespace NGit.Transport
 		/// <summary>No authentication is configured.</summary>
 		/// <remarks>No authentication is configured.</remarks>
 		internal static readonly HttpAuthMethod NONE = new HttpAuthMethod.None();
+		const string SCHEMA_NAME_SEPARATOR = " "; //$NON-NLS-1$
 
 		/// <summary>Handle an authentication failure and possibly return a new response.</summary>
 		/// <remarks>Handle an authentication failure and possibly return a new response.</remarks>
@@ -69,32 +70,33 @@ namespace NGit.Transport
 		/// <returns>new authentication method to try.</returns>
 		internal static HttpAuthMethod ScanResponse(HttpURLConnection conn)
 		{
-			string hdr = conn.GetHeaderField(HttpSupport.HDR_WWW_AUTHENTICATE);
-			if (hdr == null || hdr.Length == 0)
+			HttpAuthMethod authentication = NONE;
+			var headers = conn.GetHeaders();
+
+			if (headers != null)
 			{
-				return NONE;
-			}
-			int sp = hdr.IndexOf(' ');
-			if (sp < 0)
-			{
-				return NONE;
-			}
-			string type = Sharpen.Runtime.Substring(hdr, 0, sp);
-			if (Sharpen.Runtime.EqualsIgnoreCase(HttpAuthMethod.Basic.NAME, type))
-			{
-				return new HttpAuthMethod.Basic();
-			}
-			else
-			{
-				if (Sharpen.Runtime.EqualsIgnoreCase(HttpAuthMethod.Digest.NAME, type))
+				foreach (var authHeader in headers.GetValues(HttpSupport.HDR_WWW_AUTHENTICATE))
 				{
-					return new HttpAuthMethod.Digest(Sharpen.Runtime.Substring(hdr, sp + 1));
-				}
-				else
-				{
-					return NONE;
+					if (!string.IsNullOrEmpty(authHeader))
+					{
+						var valueParts = authHeader.Split(SCHEMA_NAME_SEPARATOR.ToCharArray(), 2);
+						var method = valueParts[0];
+						var param = valueParts.Length == 1 ? string.Empty : valueParts[1];
+
+						if (Sharpen.Runtime.EqualsIgnoreCase(HttpAuthMethod.Digest.NAME, method))
+						{
+							return new HttpAuthMethod.Digest(param);
+						}
+
+						if (Sharpen.Runtime.EqualsIgnoreCase(HttpAuthMethod.Basic.NAME, method))
+						{
+							authentication = new HttpAuthMethod.Basic();
+						}
+					}
 				}
 			}
+
+			return authentication;
 		}
 
 		/// <summary>Update this method with the credentials from the URIish.</summary>
@@ -367,7 +369,7 @@ namespace NGit.Transport
 				}
 			}
 
-			private static readonly char[] LHEX = new char[] { '0', '1', '2', '3', '4', '5', 
+			private static readonly char[] LHEX = new char[] { '0', '1', '2', '3', '4', '5',
 				'6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
 			//

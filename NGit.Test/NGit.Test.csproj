@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NGit.Transport\HttpAuthTest.cs" />
     <Compile Include="NGit\AbbreviatedObjectIdTest.cs" />
     <Compile Include="NGit\ConfigTest.cs" />
     <Compile Include="NGit\ConstantsEncodingTest.cs" />
